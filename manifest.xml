@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Manifest>
+    <ID>risky_highlighter</ID>
+    <Name>Risky Highlighter</Name>
+    <Author>Greger</Author>
+    <ModVersion>1.0</ModVersion>
+    <Description>Simple mod that marks contraband/stolen items</Description>
+    <GameVersions>
+        <Version>0.46D</Version>
+    </GameVersions>
+    <Prerequisites />
+    <Assemblies>
+        <Assembly>RiskyHighlighter.dll</Assembly>
+    </Assemblies>
+    <Capabilities />
+</Manifest>

@@ -1,0 +1,1 @@
+﻿Simple mod for Probably Stolen that highlights stolen and contraband items.
