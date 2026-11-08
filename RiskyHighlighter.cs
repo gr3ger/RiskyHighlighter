@@ -81,18 +81,44 @@ namespace RiskyHighlighter
             if (orgItemRect.parent.Find("RiskyHighlight") != null)
                 return;
             
-            GameObject borderObject = new GameObject("RiskyHighlight", typeof(RectTransform), typeof(Image));
-            borderObject.transform.SetParent(orgItemRect.parent, false);
-            borderObject.transform.SetSiblingIndex(orgItemRect.GetSiblingIndex());
-            Image borderImage = borderObject.GetComponent<Image>();
-            borderImage.color = color;
+            GameObject highlightContainer = new GameObject("RiskyHighlight", typeof(RectTransform));
+            highlightContainer.transform.SetParent(orgItemRect.parent, false);
+            highlightContainer.transform.SetSiblingIndex(orgItemRect.GetSiblingIndex());
+
+            RectTransform rootRect = highlightContainer.GetComponent<RectTransform>();
+            rootRect.anchorMin = orgItemRect.anchorMin;
+            rootRect.anchorMax = orgItemRect.anchorMax;
+            rootRect.pivot = orgItemRect.pivot;
+            rootRect.anchoredPosition = orgItemRect.anchoredPosition;
+            rootRect.sizeDelta = orgItemRect.sizeDelta;
             
-            RectTransform borderRect = borderObject.GetComponent<RectTransform>();
-            borderRect.anchorMin = orgItemRect.anchorMin;
-            borderRect.anchorMax = orgItemRect.anchorMax;
-            borderRect.pivot = orgItemRect.pivot;
-            borderRect.anchoredPosition = orgItemRect.anchoredPosition;
-            borderRect.sizeDelta = orgItemRect.sizeDelta;
+            var gridShape = instance.shape;
+            float cellWidth = orgItemRect.rect.width / gridShape.width;
+            float cellHeight = orgItemRect.rect.height / gridShape.height;
+            
+            for (int localY = 0; localY < gridShape.height; ++localY)
+            {
+                for (int localX = 0; localX < gridShape.width; ++localX)
+                {
+                    (int x, int y) = gridShape.ForwardTransform(localX, localY);
+                    if (gridShape.GetLocal(localX, localY) == 0)
+                        continue;
+                    
+                    GameObject cellObject = new GameObject("Cell", typeof(RectTransform), typeof(Image));
+                    cellObject.transform.SetParent(highlightContainer.transform, false);
+
+                    Image cellImage = cellObject.GetComponent<Image>();
+                    cellImage.color = color;
+
+                    RectTransform cellRect = cellObject.GetComponent<RectTransform>();
+                    cellRect.anchorMin = new Vector2(0, 1);
+                    cellRect.anchorMax = new Vector2(0, 1);
+                    cellRect.pivot = new Vector2(0, 1);
+                    cellRect.sizeDelta = new Vector2(cellWidth, cellHeight);
+                    cellRect.anchoredPosition = new Vector2(x * cellWidth, -y * cellHeight);
+
+                }
+            }
         }
     }
 }

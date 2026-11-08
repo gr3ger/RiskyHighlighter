@@ -3,7 +3,7 @@
     <ID>risky_highlighter</ID>
     <Name>Risky Highlighter</Name>
     <Author>Greger</Author>
-    <ModVersion>1.0</ModVersion>
+    <ModVersion>1.0.1</ModVersion>
     <Description>Simple mod that marks contraband/stolen items</Description>
     <GameVersions>
         <Version>0.46D</Version>
