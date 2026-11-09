@@ -1,6 +1,8 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace RiskyHighlighter
 {
@@ -46,28 +48,8 @@ namespace RiskyHighlighter
             }
             return color;
         }
-    }
-    
-    [HarmonyPatch(typeof (GameItemElement), "Validate")]
-    internal static class PatchGameItemElementValidate
-    {
-        [HarmonyPostfix]
-        internal static void Postfix(GameItemElement __instance)
-        {
-            if(StolenHelper.IsStolenItem(__instance)){
-                AddHighlight(__instance, RiskyHighlighter.GetStolenColor());
-                return;
-            }
-            
-            if(ContrabandHelper.IsContraband(__instance)){
-                AddHighlight(__instance, RiskyHighlighter.GetContrabandColor());
-                return;
-            }
-             
-            RemoveHighlight(__instance);
-        }
-
-        private static void RemoveHighlight(GameItemElement instance)
+        
+        public static void RemoveHighlight(GameItemElement instance)
         {
             var highlight = instance.background.rectTransform.parent.Find("RiskyHighlight");
             if (highlight != null) {
@@ -75,11 +57,12 @@ namespace RiskyHighlighter
             }
         }
 
-        private static void AddHighlight(GameItemElement instance, Color color)
+        public static void AddHighlight(GameItemElement instance, Color color)
         {
             RectTransform orgItemRect = instance.background.rectTransform;
             if (orgItemRect.parent.Find("RiskyHighlight") != null)
                 return;
+            
             
             GameObject highlightContainer = new GameObject("RiskyHighlight", typeof(RectTransform));
             highlightContainer.transform.SetParent(orgItemRect.parent, false);
@@ -91,6 +74,12 @@ namespace RiskyHighlighter
             rootRect.pivot = orgItemRect.pivot;
             rootRect.anchoredPosition = orgItemRect.anchoredPosition;
             rootRect.sizeDelta = orgItemRect.sizeDelta;
+            
+            
+            if(instance.name.Contains("dream cap", StringComparison.CurrentCultureIgnoreCase))
+            {
+                log.Log($"instance recttransform size x: {instance.rectTransform.rect.width} y: {instance.rectTransform.rect.height}");
+            }
             
             var gridShape = instance.shape;
             float cellWidth = orgItemRect.rect.width / gridShape.width;
@@ -119,6 +108,26 @@ namespace RiskyHighlighter
 
                 }
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(GameItemElement), "UpdateRectTransform")]
+    internal static class PatchGameItemUpdateRectTransform
+    {
+        [HarmonyPostfix]
+        internal static void Postfix(GameItemElement __instance)
+        {
+            if(StolenHelper.IsStolenItem(__instance)){
+                RiskyHighlighter.AddHighlight(__instance, RiskyHighlighter.GetStolenColor());
+                return;
+            }
+            
+            if(ContrabandHelper.IsContraband(__instance)){
+                RiskyHighlighter.AddHighlight(__instance, RiskyHighlighter.GetContrabandColor());
+                return;
+            }
+             
+            RiskyHighlighter.RemoveHighlight(__instance);
         }
     }
 }
