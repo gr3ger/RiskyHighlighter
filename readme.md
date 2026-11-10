@@ -8,7 +8,7 @@ Highlight colors are configurable inside the game.
 Latest release can be downloaded [here](https://github.com/gr3ger/RiskyHighlighter/releases/latest)  
 Then unzip the archive and place in the `Mods` folder in the game's install directory.
 
-Folder sturcture should look like this:
+Folder structure should look like this:
 ```
 Probably Stolen
 └── Mods
